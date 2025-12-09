@@ -35,9 +35,9 @@ class _CustomerPageState extends State<CustomerPage> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading customers: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading customers: $e')));
       }
     }
   }
@@ -53,9 +53,9 @@ class _CustomerPageState extends State<CustomerPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting customer: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error deleting customer: $e')));
       }
     }
   }
@@ -73,14 +73,7 @@ class _CustomerPageState extends State<CustomerPage> {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white,
-                  Colors.grey.shade50,
-                ],
-              ),
+              color: Colors.white,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -158,9 +151,7 @@ class _CustomerPageState extends State<CustomerPage> {
                       child: Container(
                         height: 48,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.red.shade400, Colors.red.shade600],
-                          ),
+                          color: Colors.red,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
@@ -252,9 +243,7 @@ class _CustomerPageState extends State<CustomerPage> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.blue.shade400, Colors.purple.shade400],
-                        ),
+                        color: const Color(0xFF2196F3),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -298,242 +287,257 @@ class _CustomerPageState extends State<CustomerPage> {
               ),
               // Content
               Expanded(
-                child: _isLoading
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.blue.shade400,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Memuat data customer...',
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : _customers.isEmpty
+                child:
+                    _isLoading
                         ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(24),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    Icons.people_outline_rounded,
-                                    size: 64,
-                                    color: Colors.grey.shade400,
-                                  ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.blue.shade400,
                                 ),
-                                const SizedBox(height: 24),
-                                Text(
-                                  'Belum ada customer',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey.shade700,
-                                  ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Memuat data customer...',
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 16,
                                 ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Tambah customer baru dengan\nmenekan tombol + di bawah',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey.shade500,
-                                  ),
+                              ),
+                            ],
+                          ),
+                        )
+                        : _customers.isEmpty
+                        ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  shape: BoxShape.circle,
                                 ),
-                              ],
-                            ),
-                          )
+                                child: Icon(
+                                  Icons.people_outline_rounded,
+                                  size: 64,
+                                  color: Colors.grey.shade400,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                'Belum ada customer',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tambah customer baru dengan\nmenekan tombol + di bawah',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                         : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: _customers.length,
-                            itemBuilder: (context, index) {
-                              final customer = _customers[index];
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                child: Card(
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    side: BorderSide(
-                                      color: Colors.grey.shade200,
-                                      width: 1,
-                                    ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: _customers.length,
+                          itemBuilder: (context, index) {
+                            final customer = _customers[index];
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: Card(
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  side: BorderSide(
+                                    color: Colors.grey.shade200,
+                                    width: 1,
                                   ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.white,
-                                          Colors.grey.shade50,
-                                        ],
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
                                       ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.05),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Row(
-                                        children: [
-                                          // Avatar
-                                          Container(
-                                            width: 50,
-                                            height: 50,
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.blue.shade300,
-                                                  Colors.purple.shade300,
-                                                ],
-                                              ),
-                                              borderRadius: BorderRadius.circular(12),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Row(
+                                      children: [
+                                        // Avatar
+                                        Container(
+                                          width: 50,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF2196F3),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
                                             ),
-                                            child: Center(
-                                              child: Text(
-                                                customer.nama.isNotEmpty
-                                                    ? customer.nama[0].toUpperCase()
-                                                    : 'C',
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              customer.nama.isNotEmpty
+                                                  ? customer.nama[0]
+                                                      .toUpperCase()
+                                                  : 'C',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(width: 16),
-                                          // Customer Info
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  customer.nama,
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.black87,
-                                                  ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        // Customer Info
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                customer.nama,
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.black87,
                                                 ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.phone_rounded,
+                                                    size: 16,
+                                                    color: Colors.grey.shade600,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    customer.noHp,
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              if (customer.alamat != null &&
+                                                  customer
+                                                      .alamat!
+                                                      .isNotEmpty) ...[
                                                 const SizedBox(height: 4),
                                                 Row(
                                                   children: [
                                                     Icon(
-                                                      Icons.phone_rounded,
+                                                      Icons.location_on_rounded,
                                                       size: 16,
-                                                      color: Colors.grey.shade600,
+                                                      color:
+                                                          Colors.grey.shade600,
                                                     ),
                                                     const SizedBox(width: 4),
-                                                    Text(
-                                                      customer.noHp,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.grey.shade600,
+                                                    Expanded(
+                                                      child: Text(
+                                                        customer.alamat!,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color:
+                                                              Colors
+                                                                  .grey
+                                                                  .shade600,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                                if (customer.alamat != null && customer.alamat!.isNotEmpty) ...[
-                                                  const SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.location_on_rounded,
-                                                        size: 16,
-                                                        color: Colors.grey.shade600,
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                      Expanded(
-                                                        child: Text(
-                                                          customer.alamat!,
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                            color: Colors.grey.shade600,
-                                                          ),
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow.ellipsis,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
                                               ],
-                                            ),
-                                          ),
-                                          // Action Buttons
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.blue.shade50,
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                                child: IconButton(
-                                                  icon: Icon(
-                                                    Icons.edit_rounded,
-                                                    color: Colors.blue.shade600,
-                                                    size: 20,
-                                                  ),
-                                                  onPressed: () async {
-                                                    final result = await Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) => CustomerFormPage(customer: customer),
-                                                      ),
-                                                    );
-                                                    if (result == true) {
-                                                      _loadCustomers();
-                                                    }
-                                                  },
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red.shade50,
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                                child: IconButton(
-                                                  icon: Icon(
-                                                    Icons.delete_rounded,
-                                                    color: Colors.red.shade600,
-                                                    size: 20,
-                                                  ),
-                                                  onPressed: () => _showDeleteConfirmation(customer),
-                                                ),
-                                              ),
                                             ],
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                        // Action Buttons
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue.shade50,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: IconButton(
+                                                icon: Icon(
+                                                  Icons.edit_rounded,
+                                                  color: Colors.blue.shade600,
+                                                  size: 20,
+                                                ),
+                                                onPressed: () async {
+                                                  final result =
+                                                      await Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder:
+                                                              (context) =>
+                                                                  CustomerFormPage(
+                                                                    customer:
+                                                                        customer,
+                                                                  ),
+                                                        ),
+                                                      );
+                                                  if (result == true) {
+                                                    _loadCustomers();
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.red.shade50,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: IconButton(
+                                                icon: Icon(
+                                                  Icons.delete_rounded,
+                                                  color: Colors.red.shade600,
+                                                  size: 20,
+                                                ),
+                                                onPressed:
+                                                    () =>
+                                                        _showDeleteConfirmation(
+                                                          customer,
+                                                        ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            );
+                          },
+                        ),
               ),
             ],
           ),
@@ -541,9 +545,7 @@ class _CustomerPageState extends State<CustomerPage> {
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue.shade400, Colors.purple.shade400],
-          ),
+          color: const Color(0xFF2196F3),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -557,9 +559,7 @@ class _CustomerPageState extends State<CustomerPage> {
           onPressed: () async {
             final result = await Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const CustomerFormPage(),
-              ),
+              MaterialPageRoute(builder: (context) => const CustomerFormPage()),
             );
             if (result == true) {
               _loadCustomers();
@@ -567,11 +567,7 @@ class _CustomerPageState extends State<CustomerPage> {
           },
           backgroundColor: Colors.transparent,
           elevation: 0,
-          child: const Icon(
-            Icons.add_rounded,
-            color: Colors.white,
-            size: 28,
-          ),
+          child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
         ),
       ),
     );
@@ -625,7 +621,10 @@ class _CustomerFormPageState extends State<CustomerFormPage> {
         id: widget.customer?.id,
         nama: _namaController.text.trim(),
         noHp: _noHpController.text.trim(),
-        alamat: _alamatController.text.trim().isEmpty ? null : _alamatController.text.trim(),
+        alamat:
+            _alamatController.text.trim().isEmpty
+                ? null
+                : _alamatController.text.trim(),
       );
 
       if (widget.customer == null) {
@@ -651,9 +650,9 @@ class _CustomerFormPageState extends State<CustomerFormPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving customer: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving customer: $e')));
       }
     } finally {
       setState(() {
@@ -711,7 +710,9 @@ class _CustomerFormPageState extends State<CustomerFormPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.customer == null ? 'Tambah Customer' : 'Edit Customer',
+                            widget.customer == null
+                                ? 'Tambah Customer'
+                                : 'Edit Customer',
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -719,7 +720,7 @@ class _CustomerFormPageState extends State<CustomerFormPage> {
                             ),
                           ),
                           Text(
-                            widget.customer == null 
+                            widget.customer == null
                                 ? 'Masukkan data customer baru'
                                 : 'Perbarui data customer',
                             style: TextStyle(
@@ -869,7 +870,10 @@ class _CustomerFormPageState extends State<CustomerFormPage> {
                           height: 56,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Colors.blue.shade400, Colors.purple.shade400],
+                              colors: [
+                                Colors.blue.shade400,
+                                Colors.purple.shade400,
+                              ],
                             ),
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
@@ -889,18 +893,23 @@ class _CustomerFormPageState extends State<CustomerFormPage> {
                                 borderRadius: BorderRadius.circular(16),
                               ),
                             ),
-                            child: _isLoading
-                                ? const CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  )
-                                : Text(
-                                    widget.customer == null ? 'Tambah Customer' : 'Update Customer',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
+                            child:
+                                _isLoading
+                                    ? const CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    )
+                                    : Text(
+                                      widget.customer == null
+                                          ? 'Tambah Customer'
+                                          : 'Update Customer',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  ),
                           ),
                         ),
                       ],

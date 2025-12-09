@@ -22,18 +22,18 @@ class AppTextStyles {
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
   );
-  
+
   static const TextStyle heading2 = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );
-  
+
   static const TextStyle body1 = TextStyle(
     fontSize: 16,
     color: AppColors.textPrimary,
   );
-  
+
   static const TextStyle body2 = TextStyle(
     fontSize: 14,
     color: AppColors.textSecondary,
@@ -138,10 +138,10 @@ class _BarangPageState extends State<BarangPage> {
 
     try {
       final pdfFile = await PdfService.generateBarangReportPdf(_barangList);
-      
+
       // Close loading dialog
       if (mounted) Navigator.of(context).pop();
-      
+
       // Show success dialog
       if (mounted) {
         showDialog(
@@ -170,7 +170,7 @@ class _BarangPageState extends State<BarangPage> {
     } catch (e) {
       // Close loading dialog
       if (mounted) Navigator.of(context).pop();
-      
+
       // Show error
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -218,7 +218,9 @@ class _BarangPageState extends State<BarangPage> {
                   children: [
                     Text(
                       'ID: ${barang.id}',
-                      style: AppTextStyles.body2.copyWith(fontWeight: FontWeight.w500),
+                      style: AppTextStyles.body2.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     if (barang.supplier != null && barang.supplier!.isNotEmpty)
                       Text('Supplier: ${barang.supplier}'),
@@ -252,7 +254,7 @@ class _BarangPageState extends State<BarangPage> {
   void _showOutflowDialog(Barang barang) {
     final TextEditingController outflowController = TextEditingController();
     final TextEditingController noteController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -263,14 +265,7 @@ class _BarangPageState extends State<BarangPage> {
           title: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.1),
-                  AppColors.secondary.withValues(alpha: 0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -370,7 +365,10 @@ class _BarangPageState extends State<BarangPage> {
                           children: [
                             Icon(
                               Icons.check_circle_outline,
-                              color: barang.sisaStok > 0 ? Colors.green : Colors.orange,
+                              color:
+                                  barang.sisaStok > 0
+                                      ? Colors.green
+                                      : Colors.orange,
                               size: 20,
                             ),
                             const SizedBox(height: 4),
@@ -379,7 +377,10 @@ class _BarangPageState extends State<BarangPage> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: barang.sisaStok > 0 ? Colors.green : Colors.orange,
+                                color:
+                                    barang.sisaStok > 0
+                                        ? Colors.green
+                                        : Colors.orange,
                               ),
                             ),
                             const Text(
@@ -395,9 +396,9 @@ class _BarangPageState extends State<BarangPage> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Outflow amount input
                 const Text(
                   'Jumlah Keluar',
@@ -434,9 +435,9 @@ class _BarangPageState extends State<BarangPage> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Note input
                 const Text(
                   'Catatan (Opsional)',
@@ -480,7 +481,10 @@ class _BarangPageState extends State<BarangPage> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
               ),
               child: const Text(
                 'Batal',
@@ -500,7 +504,9 @@ class _BarangPageState extends State<BarangPage> {
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('Jumlah keluar melebihi stok yang tersedia!'),
+                        content: const Text(
+                          'Jumlah keluar melebihi stok yang tersedia!',
+                        ),
                         backgroundColor: AppColors.error,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
@@ -525,7 +531,10 @@ class _BarangPageState extends State<BarangPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -533,9 +542,7 @@ class _BarangPageState extends State<BarangPage> {
               ),
               child: const Text(
                 'Catat Keluar',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -544,7 +551,11 @@ class _BarangPageState extends State<BarangPage> {
     );
   }
 
-  Future<void> _recordOutflow(Barang barang, int outflowAmount, String note) async {
+  Future<void> _recordOutflow(
+    Barang barang,
+    int outflowAmount,
+    String note,
+  ) async {
     try {
       // Update the outflow amount
       final updatedBarang = Barang(
@@ -559,7 +570,7 @@ class _BarangPageState extends State<BarangPage> {
       );
 
       await DatabaseHelper().updateBarang(updatedBarang);
-      
+
       // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -589,7 +600,7 @@ class _BarangPageState extends State<BarangPage> {
           ),
         );
       }
-      
+
       // Reload the data
       _loadBarang();
     } catch (e) {
@@ -612,21 +623,9 @@ class _BarangPageState extends State<BarangPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Manajemen Barang',
-          style: AppTextStyles.heading2,
-        ),
-        backgroundColor: Colors.transparent,
+        title: const Text('Manajemen Barang', style: AppTextStyles.heading2),
+        backgroundColor: AppColors.primary,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.primary, AppColors.secondary],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -636,682 +635,806 @@ class _BarangPageState extends State<BarangPage> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _barangList.isEmpty
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _barangList.isEmpty
               ? const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.inventory_2_outlined,
-                        size: 64,
-                        color: AppColors.textSecondary,
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'Belum ada data barang',
-                        style: AppTextStyles.heading2,
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Tap tombol + untuk menambah barang baru',
-                        style: AppTextStyles.body2,
-                      ),
-                    ],
-                  ),
-                )
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.inventory_2_outlined,
+                      size: 64,
+                      color: AppColors.textSecondary,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Belum ada data barang',
+                      style: AppTextStyles.heading2,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Tap tombol + untuk menambah barang baru',
+                      style: AppTextStyles.body2,
+                    ),
+                  ],
+                ),
+              )
               : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _barangList.length,
-                  itemBuilder: (context, index) {
-                    final barang = _barangList[index];
-                    return GestureDetector(
-                      onTap: () => _showOutflowDialog(barang),
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.white,
-                              Colors.grey.shade50,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                padding: const EdgeInsets.all(16),
+                itemCount: _barangList.length,
+                itemBuilder: (context, index) {
+                  final barang = _barangList[index];
+                  return GestureDetector(
+                    onTap: () => _showOutflowDialog(barang),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                            spreadRadius: 0,
                           ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.08),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
-                              spreadRadius: 0,
-                            ),
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                              spreadRadius: 0,
-                            ),
-                          ],
-                          border: Border.all(
-                            color: Colors.grey.withValues(alpha: 0.1),
-                            width: 1,
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                            spreadRadius: 0,
                           ),
+                        ],
+                        border: Border.all(
+                          color: Colors.grey.withValues(alpha: 0.1),
+                          width: 1,
                         ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(20),
-                            onTap: () => _showOutflowDialog(barang),
-                            child: Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Header with modern design
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [AppColors.primary, AppColors.secondary],
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                          ),
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                        child: Text(
-                                          'ID: ${barang.id}',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      // Action buttons with modern design
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: AppColors.primary.withValues(alpha: 0.1),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: IconButton(
-                                          icon: const Icon(
-                                            Icons.edit_outlined,
-                                            color: AppColors.primary,
-                                            size: 20,
-                                          ),
-                                          onPressed: () async {
-                                            final result = await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => BarangFormPage(barang: barang),
-                                              ),
-                                            );
-                                            if (result == true) {
-                                              _loadBarang();
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: AppColors.error.withValues(alpha: 0.1),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: IconButton(
-                                          icon: const Icon(
-                                            Icons.delete_outline,
-                                            color: AppColors.error,
-                                            size: 20,
-                                          ),
-                                          onPressed: () => _showDeleteConfirmation(barang),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 20),
-                                  
-                                  // Nama Barang with modern styling
-                                  if (barang.nama != null && barang.nama!.isNotEmpty)
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () => _showOutflowDialog(barang),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Header with modern design
+                                Row(
+                                  children: [
                                     Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(16),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
                                       decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            AppColors.primary.withValues(alpha: 0.05),
-                                            AppColors.secondary.withValues(alpha: 0.05),
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                        ),
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: Border.all(
-                                          color: AppColors.primary.withValues(alpha: 0.1),
-                                          width: 1,
+                                        color: AppColors.primary,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        'ID: ${barang.id}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 12,
                                         ),
                                       ),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.primary.withValues(alpha: 0.1),
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            child: const Icon(
-                                              Icons.inventory_2_outlined,
-                                              color: AppColors.primary,
-                                              size: 20,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                const Text(
-                                                  'Nama Barang',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: AppColors.textSecondary,
-                                                    fontWeight: FontWeight.w500,
+                                    ),
+                                    const Spacer(),
+                                    // Action buttons with modern design
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: IconButton(
+                                        icon: const Icon(
+                                          Icons.edit_outlined,
+                                          color: AppColors.primary,
+                                          size: 20,
+                                        ),
+                                        onPressed: () async {
+                                          final result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => BarangFormPage(
+                                                    barang: barang,
                                                   ),
-                                                ),
-                                                const SizedBox(height: 2),
-                                                Text(
-                                                  barang.nama!,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: AppColors.textPrimary,
-                                                  ),
-                                                ),
-                                              ],
                                             ),
-                                          ),
-                                        ],
+                                          );
+                                          if (result == true) {
+                                            _loadBarang();
+                                          }
+                                        },
                                       ),
                                     ),
-                                  
-                                  const SizedBox(height: 16),
-                                  
-                                  // Info Grid with modern cards
-                                  Row(
-                                    children: [
-                                      // Supplier Card
-                                      if (barang.supplier != null && barang.supplier!.isNotEmpty)
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: Colors.blue.withValues(alpha: 0.05),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: Colors.blue.withValues(alpha: 0.1),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.business_outlined,
-                                                      color: Colors.blue.shade600,
-                                                      size: 16,
-                                                    ),
-                                                    const SizedBox(width: 6),
-                                                    const Text(
-                                                      'Supplier',
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        color: AppColors.textSecondary,
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  barang.supplier!,
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.blue.shade700,
-                                                  ),
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: AppColors.error.withValues(
+                                          alpha: 0.1,
                                         ),
-                                      
-                                      if (barang.supplier != null && barang.supplier!.isNotEmpty && barang.tanggalPembelian != null)
-                                        const SizedBox(width: 12),
-                                      
-                                      // Date Card
-                                      if (barang.tanggalPembelian != null)
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: Colors.orange.withValues(alpha: 0.05),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: Colors.orange.withValues(alpha: 0.1),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.calendar_today_outlined,
-                                                      color: Colors.orange.shade600,
-                                                      size: 16,
-                                                    ),
-                                                    const SizedBox(width: 6),
-                                                    const Text(
-                                                      'Tanggal',
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        color: AppColors.textSecondary,
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  '${barang.tanggalPembelian!.day}/${barang.tanggalPembelian!.month}/${barang.tanggalPembelian!.year}',
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.orange.shade700,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: IconButton(
+                                        icon: const Icon(
+                                          Icons.delete_outline,
+                                          color: AppColors.error,
+                                          size: 20,
                                         ),
-                                    ],
-                                  ),
-                                  
-                                  const SizedBox(height: 16),
-                                  
-                                  // Price Information
-                                  if (barang.hppModal != null || barang.hargaJual != null)
-                                    Row(
-                                      children: [
-                                        // HPP Modal
-                                        if (barang.hppModal != null)
-                                          Expanded(
-                                            child: Container(
-                                              padding: const EdgeInsets.all(12),
-                                              decoration: BoxDecoration(
-                                                color: Colors.green.withValues(alpha: 0.05),
-                                                borderRadius: BorderRadius.circular(12),
-                                                border: Border.all(
-                                                  color: Colors.green.withValues(alpha: 0.1),
-                                                  width: 1,
-                                                ),
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.attach_money_outlined,
-                                                        color: Colors.green.shade600,
-                                                        size: 16,
-                                                      ),
-                                                      const SizedBox(width: 6),
-                                                      const Text(
-                                                        'HPP Modal',
-                                                        style: TextStyle(
-                                                          fontSize: 11,
-                                                          color: AppColors.textSecondary,
-                                                          fontWeight: FontWeight.w500,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 4),
-                                                  Text(
-                                                    NumberFormatter.formatCurrency(barang.hppModal),
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Colors.green.shade700,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        
-                                        if (barang.hppModal != null && barang.hargaJual != null)
-                                          const SizedBox(width: 12),
-                                        
-                                        // Harga Jual
-                                        if (barang.hargaJual != null)
-                                          Expanded(
-                                            child: Container(
-                                              padding: const EdgeInsets.all(12),
-                                              decoration: BoxDecoration(
-                                                color: Colors.purple.withValues(alpha: 0.05),
-                                                borderRadius: BorderRadius.circular(12),
-                                                border: Border.all(
-                                                  color: Colors.purple.withValues(alpha: 0.1),
-                                                  width: 1,
-                                                ),
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.sell_outlined,
-                                                        color: Colors.purple.shade600,
-                                                        size: 16,
-                                                      ),
-                                                      const SizedBox(width: 6),
-                                                      const Text(
-                                                        'Harga Jual',
-                                                        style: TextStyle(
-                                                          fontSize: 11,
-                                                          color: AppColors.textSecondary,
-                                                          fontWeight: FontWeight.w500,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 4),
-                                                  Text(
-                                                    NumberFormatter.formatCurrency(barang.hargaJual),
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Colors.purple.shade700,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                      ],
+                                        onPressed:
+                                            () =>
+                                                _showDeleteConfirmation(barang),
+                                      ),
                                     ),
-                                  
-                                  const SizedBox(height: 16),
-                                  
-                                  // Stock Information with modern design
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+
+                                // Nama Barang with modern styling
+                                if (barang.nama != null &&
+                                    barang.nama!.isNotEmpty)
                                   Container(
+                                    width: double.infinity,
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.grey.shade50,
-                                          Colors.white,
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.05,
                                       ),
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
-                                        color: Colors.grey.withValues(alpha: 0.2),
-                                        width: 1,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.02),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 2),
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.1,
                                         ),
-                                      ],
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        // Stok
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.primary.withValues(alpha: 0.05),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: AppColors.primary.withValues(alpha: 0.1),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  padding: const EdgeInsets.all(8),
-                                                  decoration: BoxDecoration(
-                                                    color: AppColors.primary.withValues(alpha: 0.1),
-                                                    borderRadius: BorderRadius.circular(8),
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.inventory_outlined,
-                                                    color: AppColors.primary,
-                                                    size: 20,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  '${barang.stok ?? 0}',
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
-                                                    color: AppColors.primary,
-                                                  ),
-                                                ),
-                                                const Text(
-                                                  'Stok',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: AppColors.textSecondary,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        
-                                        const SizedBox(width: 12),
-                                        
-                                        // Keluar
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.error.withValues(alpha: 0.05),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: AppColors.error.withValues(alpha: 0.1),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  padding: const EdgeInsets.all(8),
-                                                  decoration: BoxDecoration(
-                                                    color: AppColors.error.withValues(alpha: 0.1),
-                                                    borderRadius: BorderRadius.circular(8),
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.output_outlined,
-                                                    color: AppColors.error,
-                                                    size: 20,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  '${barang.keluar ?? 0}',
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
-                                                    color: AppColors.error,
-                                                  ),
-                                                ),
-                                                const Text(
-                                                  'Keluar',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: AppColors.textSecondary,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        
-                                        const SizedBox(width: 12),
-                                        
-                                        // Sisa
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: barang.sisaStok > 0 
-                                                  ? Colors.green.withValues(alpha: 0.05)
-                                                  : Colors.orange.withValues(alpha: 0.05),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: barang.sisaStok > 0 
-                                                    ? Colors.green.withValues(alpha: 0.1)
-                                                    : Colors.orange.withValues(alpha: 0.1),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  padding: const EdgeInsets.all(8),
-                                                  decoration: BoxDecoration(
-                                                    color: barang.sisaStok > 0 
-                                                        ? Colors.green.withValues(alpha: 0.1)
-                                                        : Colors.orange.withValues(alpha: 0.1),
-                                                    borderRadius: BorderRadius.circular(8),
-                                                  ),
-                                                  child: Icon(
-                                                    barang.sisaStok > 0 
-                                                        ? Icons.check_circle_outline
-                                                        : Icons.warning_outlined,
-                                                    color: barang.sisaStok > 0 ? Colors.green : Colors.orange,
-                                                    size: 20,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  '${barang.sisaStok}',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
-                                                    color: barang.sisaStok > 0 ? Colors.green : Colors.orange,
-                                                  ),
-                                                ),
-                                                const Text(
-                                                  'Sisa',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: AppColors.textSecondary,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  
-                                  const SizedBox(height: 16),
-                                  
-                                  // Click to record outflow hint
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          AppColors.secondary.withValues(alpha: 0.1),
-                                          AppColors.primary.withValues(alpha: 0.05),
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: AppColors.secondary.withValues(alpha: 0.2),
                                         width: 1,
                                       ),
                                     ),
                                     child: Row(
                                       children: [
                                         Container(
-                                          padding: const EdgeInsets.all(6),
+                                          padding: const EdgeInsets.all(8),
                                           decoration: BoxDecoration(
-                                            color: AppColors.secondary.withValues(alpha: 0.2),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: const Icon(
-                                            Icons.touch_app_outlined,
-                                            color: AppColors.secondary,
-                                            size: 16,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        const Expanded(
-                                          child: Text(
-                                            'Tap kartu untuk catat barang keluar',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: AppColors.textSecondary,
-                                              fontWeight: FontWeight.w500,
+                                            color: AppColors.primary.withValues(
+                                              alpha: 0.1,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
                                             ),
                                           ),
+                                          child: const Icon(
+                                            Icons.inventory_2_outlined,
+                                            color: AppColors.primary,
+                                            size: 20,
+                                          ),
                                         ),
-                                        const Icon(
-                                          Icons.arrow_forward_ios,
-                                          color: AppColors.secondary,
-                                          size: 14,
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Text(
+                                                'Nama Barang',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color:
+                                                      AppColors.textSecondary,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                barang.nama!,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: AppColors.textPrimary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ],
-                              ),
+
+                                const SizedBox(height: 16),
+
+                                // Info Grid with modern cards
+                                Row(
+                                  children: [
+                                    // Supplier Card
+                                    if (barang.supplier != null &&
+                                        barang.supplier!.isNotEmpty)
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.withValues(
+                                              alpha: 0.05,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.blue.withValues(
+                                                alpha: 0.1,
+                                              ),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.business_outlined,
+                                                    color: Colors.blue.shade600,
+                                                    size: 16,
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  const Text(
+                                                    'Supplier',
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color:
+                                                          AppColors
+                                                              .textSecondary,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                barang.supplier!,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.blue.shade700,
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                    if (barang.supplier != null &&
+                                        barang.supplier!.isNotEmpty &&
+                                        barang.tanggalPembelian != null)
+                                      const SizedBox(width: 12),
+
+                                    // Date Card
+                                    if (barang.tanggalPembelian != null)
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orange.withValues(
+                                              alpha: 0.05,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.orange.withValues(
+                                                alpha: 0.1,
+                                              ),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons
+                                                        .calendar_today_outlined,
+                                                    color:
+                                                        Colors.orange.shade600,
+                                                    size: 16,
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  const Text(
+                                                    'Tanggal',
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color:
+                                                          AppColors
+                                                              .textSecondary,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                '${barang.tanggalPembelian!.day}/${barang.tanggalPembelian!.month}/${barang.tanggalPembelian!.year}',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.orange.shade700,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Price Information
+                                if (barang.hppModal != null ||
+                                    barang.hargaJual != null)
+                                  Row(
+                                    children: [
+                                      // HPP Modal
+                                      if (barang.hppModal != null)
+                                        Expanded(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              color: Colors.green.withValues(
+                                                alpha: 0.05,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: Colors.green.withValues(
+                                                  alpha: 0.1,
+                                                ),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons
+                                                          .attach_money_outlined,
+                                                      color:
+                                                          Colors.green.shade600,
+                                                      size: 16,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    const Text(
+                                                      'HPP Modal',
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        color:
+                                                            AppColors
+                                                                .textSecondary,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  NumberFormatter.formatCurrency(
+                                                    barang.hppModal,
+                                                  ),
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    color:
+                                                        Colors.green.shade700,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+
+                                      if (barang.hppModal != null &&
+                                          barang.hargaJual != null)
+                                        const SizedBox(width: 12),
+
+                                      // Harga Jual
+                                      if (barang.hargaJual != null)
+                                        Expanded(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              color: Colors.purple.withValues(
+                                                alpha: 0.05,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: Colors.purple.withValues(
+                                                  alpha: 0.1,
+                                                ),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.sell_outlined,
+                                                      color:
+                                                          Colors
+                                                              .purple
+                                                              .shade600,
+                                                      size: 16,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    const Text(
+                                                      'Harga Jual',
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        color:
+                                                            AppColors
+                                                                .textSecondary,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  NumberFormatter.formatCurrency(
+                                                    barang.hargaJual,
+                                                  ),
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    color:
+                                                        Colors.purple.shade700,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+
+                                const SizedBox(height: 16),
+
+                                // Stock Information with modern design
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.grey.shade50,
+                                        Colors.white,
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: Colors.grey.withValues(alpha: 0.2),
+                                      width: 1,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.02,
+                                        ),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      // Stok
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.primary.withValues(
+                                              alpha: 0.05,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: AppColors.primary
+                                                  .withValues(alpha: 0.1),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(
+                                                  8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.primary
+                                                      .withValues(alpha: 0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: const Icon(
+                                                  Icons.inventory_outlined,
+                                                  color: AppColors.primary,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                '${barang.stok ?? 0}',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  color: AppColors.primary,
+                                                ),
+                                              ),
+                                              const Text(
+                                                'Stok',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color:
+                                                      AppColors.textSecondary,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(width: 12),
+
+                                      // Keluar
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.error.withValues(
+                                              alpha: 0.05,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: AppColors.error.withValues(
+                                                alpha: 0.1,
+                                              ),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(
+                                                  8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.error
+                                                      .withValues(alpha: 0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: const Icon(
+                                                  Icons.output_outlined,
+                                                  color: AppColors.error,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                '${barang.keluar ?? 0}',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  color: AppColors.error,
+                                                ),
+                                              ),
+                                              const Text(
+                                                'Keluar',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color:
+                                                      AppColors.textSecondary,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(width: 12),
+
+                                      // Sisa
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                barang.sisaStok > 0
+                                                    ? Colors.green.withValues(
+                                                      alpha: 0.05,
+                                                    )
+                                                    : Colors.orange.withValues(
+                                                      alpha: 0.05,
+                                                    ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color:
+                                                  barang.sisaStok > 0
+                                                      ? Colors.green.withValues(
+                                                        alpha: 0.1,
+                                                      )
+                                                      : Colors.orange
+                                                          .withValues(
+                                                            alpha: 0.1,
+                                                          ),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(
+                                                  8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      barang.sisaStok > 0
+                                                          ? Colors.green
+                                                              .withValues(
+                                                                alpha: 0.1,
+                                                              )
+                                                          : Colors.orange
+                                                              .withValues(
+                                                                alpha: 0.1,
+                                                              ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: Icon(
+                                                  barang.sisaStok > 0
+                                                      ? Icons
+                                                          .check_circle_outline
+                                                      : Icons.warning_outlined,
+                                                  color:
+                                                      barang.sisaStok > 0
+                                                          ? Colors.green
+                                                          : Colors.orange,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                '${barang.sisaStok}',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  color:
+                                                      barang.sisaStok > 0
+                                                          ? Colors.green
+                                                          : Colors.orange,
+                                                ),
+                                              ),
+                                              const Text(
+                                                'Sisa',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color:
+                                                      AppColors.textSecondary,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Click to record outflow hint
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        AppColors.secondary.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        AppColors.primary.withValues(
+                                          alpha: 0.05,
+                                        ),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: AppColors.secondary.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(6),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.secondary.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.touch_app_outlined,
+                                          color: AppColors.secondary,
+                                          size: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      const Expanded(
+                                        child: Text(
+                                          'Tap kartu untuk catat barang keluar',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.textSecondary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      const Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: AppColors.secondary,
+                                        size: 14,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
+              ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const BarangFormPage(),
-            ),
+            MaterialPageRoute(builder: (context) => const BarangFormPage()),
           );
           if (result == true) {
             _loadBarang();
@@ -1322,10 +1445,7 @@ class _BarangPageState extends State<BarangPage> {
         icon: const Icon(Icons.add),
         label: const Text(
           'Tambah Barang',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -1350,10 +1470,10 @@ class _BarangFormPageState extends State<BarangFormPage> {
   final _stokController = TextEditingController();
   final _keluarController = TextEditingController();
   final DatabaseHelper _databaseHelper = DatabaseHelper();
-  
+
   DateTime? _selectedTanggalPembelian;
   bool _isLoading = false;
-  
+
   // Add calculated remaining stock
   int _sisaStok = 0;
 
@@ -1363,7 +1483,7 @@ class _BarangFormPageState extends State<BarangFormPage> {
     if (widget.barang != null) {
       _populateFields();
     }
-    
+
     // Add listeners for automatic stock calculation
     _stokController.addListener(_calculateSisaStok);
     _keluarController.addListener(_calculateSisaStok);
@@ -1393,12 +1513,18 @@ class _BarangFormPageState extends State<BarangFormPage> {
   void _populateFields() {
     _namaController.text = widget.barang!.nama ?? '';
     _supplierController.text = widget.barang!.supplier ?? '';
-    _hppModalController.text = widget.barang!.hppModal != null ? NumberFormatter.formatNumber(widget.barang!.hppModal) : '';
-    _hargaJualController.text = widget.barang!.hargaJual != null ? NumberFormatter.formatNumber(widget.barang!.hargaJual) : '';
+    _hppModalController.text =
+        widget.barang!.hppModal != null
+            ? NumberFormatter.formatNumber(widget.barang!.hppModal)
+            : '';
+    _hargaJualController.text =
+        widget.barang!.hargaJual != null
+            ? NumberFormatter.formatNumber(widget.barang!.hargaJual)
+            : '';
     _stokController.text = widget.barang!.stok?.toString() ?? '';
     _keluarController.text = widget.barang!.keluar?.toString() ?? '';
     _selectedTanggalPembelian = widget.barang!.tanggalPembelian;
-    
+
     // Calculate initial sisa stok
     _calculateSisaStok();
   }
@@ -1421,12 +1547,19 @@ class _BarangFormPageState extends State<BarangFormPage> {
       final barang = Barang(
         id: widget.barang?.id,
         nama: _namaController.text.isEmpty ? null : _namaController.text,
-        supplier: _supplierController.text.isEmpty ? null : _supplierController.text,
+        supplier:
+            _supplierController.text.isEmpty ? null : _supplierController.text,
         tanggalPembelian: _selectedTanggalPembelian,
         hppModal: _parseFormattedNumber(_hppModalController.text),
         hargaJual: _parseFormattedNumber(_hargaJualController.text),
-        stok: _stokController.text.isEmpty ? null : int.tryParse(_stokController.text),
-        keluar: _keluarController.text.isEmpty ? null : int.tryParse(_keluarController.text),
+        stok:
+            _stokController.text.isEmpty
+                ? null
+                : int.tryParse(_stokController.text),
+        keluar:
+            _keluarController.text.isEmpty
+                ? null
+                : int.tryParse(_keluarController.text),
       );
 
       if (widget.barang == null) {
@@ -1462,17 +1595,8 @@ class _BarangFormPageState extends State<BarangFormPage> {
           widget.barang == null ? 'Tambah Barang' : 'Edit Barang',
           style: AppTextStyles.heading2,
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.primary,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.primary, AppColors.secondary],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
         foregroundColor: Colors.white,
       ),
       body: Form(
@@ -1491,9 +1615,9 @@ class _BarangFormPageState extends State<BarangFormPage> {
                   prefixIcon: Icon(Icons.inventory),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Supplier/Distributor
               TextFormField(
                 controller: _supplierController,
@@ -1503,9 +1627,9 @@ class _BarangFormPageState extends State<BarangFormPage> {
                   prefixIcon: Icon(Icons.business),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Tanggal Pembelian
               InkWell(
                 onTap: () async {
@@ -1536,18 +1660,19 @@ class _BarangFormPageState extends State<BarangFormPage> {
                             ? 'Pilih Tanggal Pembelian'
                             : '${_selectedTanggalPembelian!.day}/${_selectedTanggalPembelian!.month}/${_selectedTanggalPembelian!.year}',
                         style: TextStyle(
-                          color: _selectedTanggalPembelian == null
-                              ? Colors.grey[600]
-                              : Colors.black,
+                          color:
+                              _selectedTanggalPembelian == null
+                                  ? Colors.grey[600]
+                                  : Colors.black,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // HPP Modal
               TextFormField(
                 controller: _hppModalController,
@@ -1560,9 +1685,9 @@ class _BarangFormPageState extends State<BarangFormPage> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [CurrencyInputFormatter()],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Harga Jual
               TextFormField(
                 controller: _hargaJualController,
@@ -1575,16 +1700,18 @@ class _BarangFormPageState extends State<BarangFormPage> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [CurrencyInputFormatter()],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Stock Information Section
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1598,7 +1725,7 @@ class _BarangFormPageState extends State<BarangFormPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     Row(
                       children: [
                         // Stok
@@ -1613,9 +1740,9 @@ class _BarangFormPageState extends State<BarangFormPage> {
                             keyboardType: TextInputType.number,
                           ),
                         ),
-                        
+
                         const SizedBox(width: 16),
-                        
+
                         // Keluar
                         Expanded(
                           child: TextFormField(
@@ -1630,14 +1757,17 @@ class _BarangFormPageState extends State<BarangFormPage> {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Sisa Stok Display
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: _sisaStok >= 0 ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                        color:
+                            _sisaStok >= 0
+                                ? Colors.green.withValues(alpha: 0.1)
+                                : Colors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: _sisaStok >= 0 ? Colors.green : Colors.red,
@@ -1664,9 +1794,9 @@ class _BarangFormPageState extends State<BarangFormPage> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Save Button
               SizedBox(
                 width: double.infinity,
@@ -1680,22 +1810,27 @@ class _BarangFormPageState extends State<BarangFormPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  child:
+                      _isLoading
+                          ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                          : Text(
+                            widget.barang == null
+                                ? 'Simpan Barang'
+                                : 'Update Barang',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        )
-                      : Text(
-                          widget.barang == null ? 'Simpan Barang' : 'Update Barang',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                 ),
               ),
             ],
@@ -1708,12 +1843,12 @@ class _BarangFormPageState extends State<BarangFormPage> {
 
 class NumberFormatter {
   static final NumberFormat _formatter = NumberFormat('#,###', 'id_ID');
-  
+
   static String formatCurrency(double? value) {
     if (value == null) return '0';
     return 'Rp ${_formatter.format(value.toInt())}';
   }
-  
+
   static String formatNumber(double? value) {
     if (value == null) return '0';
     return _formatter.format(value.toInt());
@@ -1732,7 +1867,7 @@ class CurrencyInputFormatter extends TextInputFormatter {
 
     // Remove all non-digit characters
     String digitsOnly = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
-    
+
     if (digitsOnly.isEmpty) {
       return const TextEditingValue(text: '');
     }

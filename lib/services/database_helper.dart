@@ -5,6 +5,7 @@ import '../models/barang_model.dart';
 import '../models/service_model.dart';
 import '../models/transaksi_model.dart';
 import '../models/transaksi_detail_model.dart';
+import '../models/company_settings_model.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -23,7 +24,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'notadigital.db');
     return await openDatabase(
       path,
-      version: 17,
+      version: 18,
       onCreate: _createTables,
       onUpgrade: _onUpgrade,
     );
@@ -33,7 +34,7 @@ class DatabaseHelper {
     if (oldVersion < 2) {
       // Remove customer_id column from services table
       await db.execute('ALTER TABLE services RENAME TO services_old');
-      
+
       // Create new services table without customer_id
       await db.execute('''
         CREATE TABLE services (
@@ -47,23 +48,23 @@ class DatabaseHelper {
           FOREIGN KEY (barang_id) REFERENCES barang (id)
         )
       ''');
-      
+
       // Copy data from old table (excluding customer_id)
       await db.execute('''
         INSERT INTO services (id, barang_id, jenis_kerusakan, keterangan_lain_lain, keterangan_tambahan, tanggal_service, status)
         SELECT id, barang_id, jenis_kerusakan, keterangan_lain_lain, keterangan_tambahan, tanggal_service, status
         FROM services_old
       ''');
-      
+
       // Drop old table
       await db.execute('DROP TABLE services_old');
     }
-    
+
     if (oldVersion < 3) {
       // Add jenis_custom column to barang table
       await db.execute('ALTER TABLE barang ADD COLUMN jenis_custom TEXT');
     }
-    
+
     if (oldVersion < 4) {
       // Create Transaksi table
       await db.execute('''
@@ -80,7 +81,7 @@ class DatabaseHelper {
           FOREIGN KEY (customer_id) REFERENCES customers(id)
         );
       ''');
-      
+
       // Create Transaksi_Detail table
       await db.execute('''
         CREATE TABLE Transaksi_Detail (
@@ -97,11 +98,11 @@ class DatabaseHelper {
         );
       ''');
     }
-    
+
     if (oldVersion < 5) {
       // Remove foto_barang and file_pdf columns from Transaksi table
       await db.execute('ALTER TABLE Transaksi RENAME TO Transaksi_old');
-      
+
       // Create new Transaksi table without foto_barang and file_pdf
       await db.execute('''
         CREATE TABLE Transaksi (
@@ -117,22 +118,22 @@ class DatabaseHelper {
           FOREIGN KEY (customer_id) REFERENCES customers(id)
         )
       ''');
-      
+
       // Copy data from old table (excluding foto_barang and file_pdf)
       await db.execute('''
         INSERT INTO Transaksi (transaksi_id, no_invoice, tanggal, customer_id, subtotal, dp, sisa, status, metode_pembayaran)
         SELECT transaksi_id, no_invoice, tanggal, customer_id, subtotal, dp, sisa, status, metode_pembayaran
         FROM Transaksi_old
       ''');
-      
+
       // Drop old table
       await db.execute('DROP TABLE Transaksi_old');
     }
-    
+
     if (oldVersion < 6) {
       // Remove barang_id, keterangan_tambahan, tanggal_service, and status columns from services table
       await db.execute('ALTER TABLE services RENAME TO services_old');
-      
+
       // Create new services table with only required columns
       await db.execute('''
         CREATE TABLE services (
@@ -141,51 +142,53 @@ class DatabaseHelper {
           keterangan_lain_lain TEXT
         )
       ''');
-      
+
       // Copy data from old table (excluding removed columns)
       await db.execute('''
         INSERT INTO services (id, jenis_kerusakan, keterangan_lain_lain)
         SELECT id, jenis_kerusakan, keterangan_lain_lain
         FROM services_old
       ''');
-      
+
       // Drop old table
       await db.execute('DROP TABLE services_old');
-      
+
       // Insert default services after recreating table
       await _insertDefaultServices(db);
     }
-    
+
     if (oldVersion < 7) {
       // Insert default services if upgrading to version 7
-      final result = await db.rawQuery('SELECT COUNT(*) as count FROM services');
+      final result = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM services',
+      );
       final count = result.first['count'] as int;
       if (count == 0) {
         await _insertDefaultServices(db);
       }
     }
-    
+
     if (oldVersion < 8) {
       // Add merk_barang and sn_barang columns to Transaksi table
       await db.execute('ALTER TABLE Transaksi ADD COLUMN merk_barang TEXT');
       await db.execute('ALTER TABLE Transaksi ADD COLUMN sn_barang TEXT');
     }
-    
+
     if (oldVersion < 9) {
       // Add nama_barang column to Transaksi table
       await db.execute('ALTER TABLE Transaksi ADD COLUMN nama_barang TEXT');
     }
-    
+
     if (oldVersion < 10) {
       // Add contact_source and contact_data columns to Transaksi table
       await db.execute('ALTER TABLE Transaksi ADD COLUMN contact_source TEXT');
       await db.execute('ALTER TABLE Transaksi ADD COLUMN contact_data TEXT');
     }
-    
+
     if (oldVersion < 11) {
       // Make merek, tipe_model, and serial_number nullable in barang table
       await db.execute('ALTER TABLE barang RENAME TO barang_old');
-      
+
       // Create new barang table with nullable fields
       await db.execute('''
         CREATE TABLE barang (
@@ -198,32 +201,36 @@ class DatabaseHelper {
           kelengkapan TEXT
         )
       ''');
-      
+
       // Copy data from old table
       await db.execute('''
         INSERT INTO barang (id, jenis, jenis_custom, merek, tipe_model, serial_number, kelengkapan)
         SELECT id, jenis, jenis_custom, merek, tipe_model, serial_number, kelengkapan
         FROM barang_old
       ''');
-      
+
       // Drop old table
       await db.execute('DROP TABLE barang_old');
     }
-    
+
     if (oldVersion < 12) {
       // Add new inventory fields to barang table
       await db.execute('ALTER TABLE barang ADD COLUMN supplier TEXT');
-      await db.execute('ALTER TABLE barang ADD COLUMN tanggal_pembelian INTEGER');
+      await db.execute(
+        'ALTER TABLE barang ADD COLUMN tanggal_pembelian INTEGER',
+      );
       await db.execute('ALTER TABLE barang ADD COLUMN hpp_modal REAL');
       await db.execute('ALTER TABLE barang ADD COLUMN harga_jual REAL');
       await db.execute('ALTER TABLE barang ADD COLUMN stok INTEGER DEFAULT 0');
-      await db.execute('ALTER TABLE barang ADD COLUMN keluar INTEGER DEFAULT 0');
+      await db.execute(
+        'ALTER TABLE barang ADD COLUMN keluar INTEGER DEFAULT 0',
+      );
     }
-    
+
     if (oldVersion < 13) {
       // Remove jenis, jenis_custom, merek, tipe_model, serial_number, kelengkapan columns from barang table
       await db.execute('ALTER TABLE barang RENAME TO barang_old');
-      
+
       // Create new barang table with only required columns
       await db.execute('''
         CREATE TABLE barang (
@@ -236,28 +243,49 @@ class DatabaseHelper {
           keluar INTEGER DEFAULT 0
         )
       ''');
-      
+
       // Copy data from old table (excluding removed columns)
       await db.execute('''
         INSERT INTO barang (id, supplier, tanggal_pembelian, hpp_modal, harga_jual, stok, keluar)
         SELECT id, supplier, tanggal_pembelian, hpp_modal, harga_jual, stok, keluar
         FROM barang_old
       ''');
-      
+
       // Drop old table
       await db.execute('DROP TABLE barang_old');
     }
-    
+
     if (oldVersion < 14) {
       // Add nama column to barang table
       await db.execute('ALTER TABLE barang ADD COLUMN nama TEXT');
     }
-    
+
     if (oldVersion < 16) {
       // Add missing columns to Transaksi_Detail table
-      await db.execute('ALTER TABLE Transaksi_Detail ADD COLUMN nama_barang TEXT');
-      await db.execute('ALTER TABLE Transaksi_Detail ADD COLUMN sn_barang TEXT');
+      await db.execute(
+        'ALTER TABLE Transaksi_Detail ADD COLUMN nama_barang TEXT',
+      );
+      await db.execute(
+        'ALTER TABLE Transaksi_Detail ADD COLUMN sn_barang TEXT',
+      );
       await db.execute('ALTER TABLE Transaksi_Detail ADD COLUMN garansi TEXT');
+    }
+
+    if (oldVersion < 18) {
+      // Create settings table for company information
+      await db.execute('''
+        CREATE TABLE settings (
+          id INTEGER PRIMARY KEY,
+          company_name TEXT NOT NULL,
+          company_address TEXT NOT NULL,
+          company_phone TEXT NOT NULL,
+          company_email TEXT NOT NULL,
+          company_website TEXT NOT NULL
+        )
+      ''');
+
+      // Insert default company settings
+      await _insertDefaultCompanyInfo(db);
     }
   }
 
@@ -329,11 +357,29 @@ class DatabaseHelper {
         harga REAL NOT NULL,
         barang_id INTEGER NULL,
         service_id INTEGER NULL,
+        nama_barang TEXT,
+        sn_barang TEXT,
+        garansi TEXT,
         FOREIGN KEY (transaksi_id) REFERENCES Transaksi(transaksi_id),
         FOREIGN KEY (barang_id) REFERENCES barang(id),
         FOREIGN KEY (service_id) REFERENCES services(id)
       )
     ''');
+
+    // Create settings table
+    await db.execute('''
+      CREATE TABLE settings (
+        id INTEGER PRIMARY KEY,
+        company_name TEXT NOT NULL,
+        company_address TEXT NOT NULL,
+        company_phone TEXT NOT NULL,
+        company_email TEXT NOT NULL,
+        company_website TEXT NOT NULL
+      )
+    ''');
+
+    // Insert default company settings
+    await _insertDefaultCompanyInfo(db);
   }
 
   // Insert default services
@@ -343,22 +389,10 @@ class DatabaseHelper {
         'jenis_kerusakan': 'Install Ulang + Aplikasi Standar',
         'keterangan_lain_lain': null,
       },
-      {
-        'jenis_kerusakan': 'Replace LCD',
-        'keterangan_lain_lain': null,
-      },
-      {
-        'jenis_kerusakan': 'Recovery Data',
-        'keterangan_lain_lain': null,
-      },
-      {
-        'jenis_kerusakan': 'Install Aplikasi',
-        'keterangan_lain_lain': null,
-      },
-      {
-        'jenis_kerusakan': 'Replace SSD/HDD',
-        'keterangan_lain_lain': null,
-      },
+      {'jenis_kerusakan': 'Replace LCD', 'keterangan_lain_lain': null},
+      {'jenis_kerusakan': 'Recovery Data', 'keterangan_lain_lain': null},
+      {'jenis_kerusakan': 'Install Aplikasi', 'keterangan_lain_lain': null},
+      {'jenis_kerusakan': 'Replace SSD/HDD', 'keterangan_lain_lain': null},
     ];
 
     for (final service in defaultServices) {
@@ -406,11 +440,7 @@ class DatabaseHelper {
 
   Future<int> deleteCustomer(int id) async {
     final db = await database;
-    return await db.delete(
-      'customers',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('customers', where: 'id = ?', whereArgs: [id]);
   }
 
   // Barang CRUD operations
@@ -452,11 +482,7 @@ class DatabaseHelper {
 
   Future<int> deleteBarang(int id) async {
     final db = await database;
-    return await db.delete(
-      'barang',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('barang', where: 'id = ?', whereArgs: [id]);
   }
 
   // Service CRUD operations
@@ -486,10 +512,6 @@ class DatabaseHelper {
     return null;
   }
 
-
-
-
-
   Future<int> updateService(Service service) async {
     final db = await database;
     return await db.update(
@@ -502,11 +524,7 @@ class DatabaseHelper {
 
   Future<int> deleteService(int id) async {
     final db = await database;
-    return await db.delete(
-      'services',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('services', where: 'id = ?', whereArgs: [id]);
   }
 
   // Get all services
@@ -525,7 +543,10 @@ class DatabaseHelper {
 
   Future<List<Transaksi>> getAllTransaksi() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('Transaksi', orderBy: 'tanggal DESC');
+    final List<Map<String, dynamic>> maps = await db.query(
+      'Transaksi',
+      orderBy: 'tanggal DESC',
+    );
     return List.generate(maps.length, (i) {
       return Transaksi.fromMap(maps[i]);
     });
@@ -631,37 +652,38 @@ class DatabaseHelper {
   // Generate unique invoice number for specific date
   Future<String> generateInvoiceNumberForDate(DateTime date) async {
     final db = await database;
-    final datePrefix = '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}';
-    
+    final datePrefix =
+        '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}';
+
     // Try to generate unique invoice number with retry mechanism
     int attempts = 0;
     const maxAttempts = 10;
-    
+
     while (attempts < maxAttempts) {
       // Get count of transactions for the specific date
       final List<Map<String, dynamic>> result = await db.rawQuery(
         "SELECT COUNT(*) as count FROM Transaksi WHERE no_invoice LIKE ?",
-        ['INV-$datePrefix%']
+        ['INV-$datePrefix%'],
       );
-      
+
       final count = result.first['count'] as int;
       final sequence = (count + 1 + attempts).toString().padLeft(3, '0');
       final invoiceNumber = 'INV-$datePrefix-$sequence';
-      
+
       // Check if this invoice number already exists
       final existingResult = await db.rawQuery(
         "SELECT COUNT(*) as count FROM Transaksi WHERE no_invoice = ?",
-        [invoiceNumber]
+        [invoiceNumber],
       );
-      
+
       final existingCount = existingResult.first['count'] as int;
       if (existingCount == 0) {
         return invoiceNumber;
       }
-      
+
       attempts++;
     }
-    
+
     // Fallback: use timestamp if all attempts failed
     final timestamp = date.millisecondsSinceEpoch.toString().substring(8);
     return 'INV-$datePrefix-$timestamp';
@@ -691,11 +713,11 @@ class DatabaseHelper {
   Future<Map<String, dynamic>> createBackup() async {
     try {
       final db = await database;
-      
+
       final Map<String, dynamic> backup = {
         'version': 11, // Current database version
         'timestamp': DateTime.now().toIso8601String(),
-        'tables': {}
+        'tables': {},
       };
 
       // Backup all tables
@@ -708,31 +730,31 @@ class DatabaseHelper {
       return {
         'success': true,
         'data': backup,
-        'message': 'Backup berhasil dibuat'
+        'message': 'Backup berhasil dibuat',
       };
     } catch (e) {
       return {
         'success': false,
         'error': e.toString(),
-        'message': 'Gagal membuat backup: ${e.toString()}'
+        'message': 'Gagal membuat backup: ${e.toString()}',
       };
     }
   }
 
-  Future<Map<String, dynamic>> restoreFromBackup(Map<String, dynamic> backupData) async {
+  Future<Map<String, dynamic>> restoreFromBackup(
+    Map<String, dynamic> backupData,
+  ) async {
     try {
       final db = await database;
-      
+
       // Validate backup format
-      if (!backupData.containsKey('tables') || !backupData.containsKey('version')) {
-        return {
-          'success': false,
-          'message': 'Format backup tidak valid'
-        };
+      if (!backupData.containsKey('tables') ||
+          !backupData.containsKey('version')) {
+        return {'success': false, 'message': 'Format backup tidak valid'};
       }
 
       final tables = backupData['tables'] as Map<String, dynamic>;
-      
+
       // Start transaction for atomicity
       await db.transaction((txn) async {
         // Clear existing data (preserve table structure)
@@ -778,20 +800,23 @@ class DatabaseHelper {
         if (tables.containsKey('Transaksi_Detail')) {
           final transaksiDetail = tables['Transaksi_Detail'] as List<dynamic>;
           for (final detail in transaksiDetail) {
-            await txn.insert('Transaksi_Detail', Map<String, dynamic>.from(detail));
+            await txn.insert(
+              'Transaksi_Detail',
+              Map<String, dynamic>.from(detail),
+            );
           }
         }
       });
 
       return {
         'success': true,
-        'message': 'Database berhasil di-restore dari backup'
+        'message': 'Database berhasil di-restore dari backup',
       };
     } catch (e) {
       return {
         'success': false,
         'error': e.toString(),
-        'message': 'Gagal restore database: ${e.toString()}'
+        'message': 'Gagal restore database: ${e.toString()}',
       };
     }
   }
@@ -799,23 +824,67 @@ class DatabaseHelper {
   // Get database statistics for backup validation
   Future<Map<String, int>> getDatabaseStats() async {
     final db = await database;
-    final stats = <String, int>{};
-    
-    final customerCount = await db.rawQuery('SELECT COUNT(*) as count FROM customers');
-    stats['customers'] = customerCount.first['count'] as int;
-    
-    final barangCount = await db.rawQuery('SELECT COUNT(*) as count FROM barang');
-    stats['barang'] = barangCount.first['count'] as int;
-    
-    final serviceCount = await db.rawQuery('SELECT COUNT(*) as count FROM services');
-    stats['services'] = serviceCount.first['count'] as int;
-    
-    final transaksiCount = await db.rawQuery('SELECT COUNT(*) as count FROM Transaksi');
-    stats['transaksi'] = transaksiCount.first['count'] as int;
-    
-    final detailCount = await db.rawQuery('SELECT COUNT(*) as count FROM Transaksi_Detail');
+
+    final Map<String, int> stats = {};
+
+    // Count records in each table
+    var result = await db.rawQuery('SELECT COUNT(*) as count FROM customers');
+    stats['customers'] = result.first['count'] as int;
+
+    result = await db.rawQuery('SELECT COUNT(*) as count FROM barang');
+    stats['barang'] = result.first['count'] as int;
+
+    result = await db.rawQuery('SELECT COUNT(*) as count FROM services');
+    stats['services'] = result.first['count'] as int;
+
+    result = await db.rawQuery('SELECT COUNT(*) as count FROM Transaksi');
+    stats['transaksi'] = result.first['count'] as int;
+
+    final detailCount = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM Transaksi_Detail',
+    );
     stats['transaksi_detail'] = detailCount.first['count'] as int;
-    
+
+    result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM settings',
+    ); // Added settings to stats
+    stats['settings'] = result.first['count'] as int;
+
     return stats;
+  }
+
+  // Insert default company information
+  Future<void> _insertDefaultCompanyInfo(Database db) async {
+    final defaultSettings = CompanySettings.defaultSettings();
+    await db.insert('settings', defaultSettings.toMap());
+  }
+
+  // Company Settings CRUD operations
+  Future<CompanySettings?> getCompanyInfo() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'settings',
+      where: 'id = ?',
+      whereArgs: [1],
+    );
+    if (maps.isNotEmpty) {
+      return CompanySettings.fromMap(maps.first);
+    }
+    return null;
+  }
+
+  Future<int> updateCompanyInfo(CompanySettings settings) async {
+    final db = await database;
+    return await db.update(
+      'settings',
+      settings.toMap(),
+      where: 'id = ?',
+      whereArgs: [1],
+    );
+  }
+
+  Future<void> insertDefaultCompanyInfo() async {
+    final db = await database;
+    await _insertDefaultCompanyInfo(db);
   }
 }
